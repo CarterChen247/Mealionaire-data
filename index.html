@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="UTF-8">
+    <title>Mealionaire by KazafChen</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
+  </head>
+  <body>
+    <section class="page-header">
+      <h1 class="project-name">Mealionaire</h1>
+      <h2 class="project-tagline">Experiences of developing a mobile application</h2>
+      <a href="https://github.com/KazafChen/Mealionaire" class="btn">View on GitHub</a>
+      <a href="https://github.com/KazafChen/Mealionaire/zipball/master" class="btn">Download .zip</a>
+      <a href="https://github.com/KazafChen/Mealionaire/tarball/master" class="btn">Download .tar.gz</a>
+    </section>
+
+    <section class="main-content">
+      <h1>
+<a id="introduction" class="anchor" href="#introduction" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Introduction</h1>
+
+<p>Mealinaire is a mobile app developed for explore nearby cuisine based on users' preferences and situation. Due to several invevitable reasons, it has stop operating.</p>
+
+<h1>
+<a id="features--solution" class="anchor" href="#features--solution" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Features &amp; Solution</h1>
+
+<p>Use 5 "W"s and 1 "H" to describe the feature and how we implement them:</p>
+
+<h2>
+<a id="who" class="anchor" href="#who" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Who</h2>
+
+<p>We are developing a recommender system, recommend proper items to the target user. We focus on people we have interest in exploring delicious foods. How do we know the preferece or taste of an user?</p>
+
+<p><strong><a href="https://developers.facebook.com/docs/android/">Facebook Android SDK</a></strong></p>
+
+<p>Facebook Login making the process of user login more easier as well as improving user experiences. We also use the uid from access token to record users' preferences.</p>
+
+<p><strong><a href="https://jena.apache.org/">Apache Jena</a></strong></p>
+
+<p>The items(foods) in our database have their own categories, by creating an ontology of the food domain, it can help us to determine the taste of an user in a clear way. After that, we can build the user profile for each user.</p>
+
+<h2>
+<a id="what" class="anchor" href="#what" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>What</h2>
+
+<p>The system offered cuisine information for user to explore. Those information mainly came from <strong><a href="http://www.319papago.idv.tw/SuperTaste/01-E.html">319papago</a></strong>. The website includes plenty Taiwan restaurant data, and the categories is based on county.</p>
+
+<p>The following is the cuisine data we have currently:</p>
+
+<ul>
+<li>restaurants</li>
+<li>dishes</li>
+</ul>
+
+<h2>
+<a id="where" class="anchor" href="#where" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>where</h2>
+
+<p>In order to make user more easier to reach their restaurant of interest, we must consider the distance between restaurant and user. The system will show candicate items for user to choose which is ordered by distance from near to far. Introducing a <a href="https://developers.google.com/maps/articles/phpsqlsearch_v3">method</a> to calculate the distance between two location on Earth:</p>
+
+<div class="highlight highlight-source-sql"><pre><span class="pl-k">SELECT</span> id, ( <span class="pl-c1">6371</span> <span class="pl-k">*</span> acos( cos( radians(<span class="pl-c1">37</span>) ) <span class="pl-k">*</span> cos( radians( lat ) ) <span class="pl-k">*</span> cos( radians( lng ) <span class="pl-k">-</span> radians(<span class="pl-k">-</span><span class="pl-c1">122</span>) ) <span class="pl-k">+</span> sin( radians(<span class="pl-c1">37</span>) ) <span class="pl-k">*</span> sin( radians( lat ) ) ) ) <span class="pl-k">AS</span> distance <span class="pl-k">FROM</span> markers <span class="pl-k">HAVING</span> distance <span class="pl-k">&lt;</span> <span class="pl-c1">25</span> <span class="pl-k">ORDER BY</span> distance <span class="pl-k">LIMIT</span> <span class="pl-c1">0</span> , <span class="pl-c1">20</span>;     </pre></div>
+
+<h2>
+<a id="when" class="anchor" href="#when" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>when</h2>
+
+<p>In the beginning of building our database, we've already record the running hours of each restaurant in our database. While recommending cuisine to the user, the system will exclude the results which should not be appeared accroding to the user's current time.</p>
+
+<h2>
+<a id="why" class="anchor" href="#why" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>why</h2>
+
+<p>User who are using our system will receive results when they are using exploring features. How do these results come from?</p>
+
+<p><strong>K-means Algorithm (Clustering)</strong></p>
+
+<p>We use k-means algorithm to train the data, and we'll figure out users who has the similar tastes.</p>
+
+<p><strong><a href="https://developer.forecast.io/">Forecast.io</a></strong></p>
+
+<p>We use this API to get information such as weather and temperatures, and take these into consideration.</p>
+
+<p><strong><a href="http://escholarship.org/uc/item/2m34683k">Definition of "Comfortable"</a></strong></p>
+
+<p>By surveyed the literature which is researching the definitions of "comfortable", the system can recommend appropriate dishes to user considering the weather is rather cold or hot.</p>
+
+<h2>
+<a id="how" class="anchor" href="#how" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>How</h2>
+
+<p>Now that user can receive information relevant to the dishes she may like, we provide additional information such as recommended route and approximate time cost. It is implemented by:</p>
+
+<p><strong><a href="https://developers.google.com/maps/documentation/android-api/">Maps Android API</a></strong></p>
+
+<p>Android version of Google Map</p>
+
+<p><strong><a href="https://developers.google.com/maps/documentation/directions/intro">Direction API</a></strong></p>
+
+<p>Easy to use. For example:</p>
+
+<pre><code>https://maps.googleapis.com/maps/api/directions/json?origin=23.4789575,120.4492964&amp;destination=25.0339031,121.5645098&amp;avoid=highways
+</code></pre>
+
+      <footer class="site-footer">
+        <span class="site-footer-owner"><a href="https://github.com/KazafChen/Mealionaire">Mealionaire</a> is maintained by <a href="https://github.com/KazafChen">KazafChen</a>.</span>
+
+        <span class="site-footer-credits">This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the <a href="https://github.com/jasonlong/cayman-theme">Cayman theme</a> by <a href="https://twitter.com/jasonlong">Jason Long</a>.</span>
+      </footer>
+
+    </section>
+
+  
+  </body>
+</html>
